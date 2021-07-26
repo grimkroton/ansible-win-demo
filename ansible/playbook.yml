@@ -1,0 +1,47 @@
+---
+- name: Deploy and Execute Python Script
+  hosts: all
+
+  tasks:
+    - name: Test winping
+      win_ping:
+
+    - name: Create Portable Python Directory
+      win_file:
+        path: C:\Python
+        state: directory
+
+    - name: Download Portable Python Archive
+      win_get_url:
+        url: https://www.python.org/ftp/python/3.9.0/python-3.9.0b1-embed-amd64.zip
+        dest: C:\Python\python-port.zip
+
+    - name: Unzip Portable Python Archive
+      win_unzip:
+        src: C:\Python\python-port.zip
+        dest: C:\Python\
+        delete_archive: yes
+      
+    - name: Create Directory
+      win_file:
+        path: C:\Master\
+        state: directory
+
+    - name: Deploy Python Script
+      win_copy:
+        src: files/echo.py
+        dest: C:\Master\echo.py
+
+    - name: Execute Python Script
+      win_command: C:\Python\python C:\Master\echo.py
+      register: python_out
+
+    - name: Get command output
+      debug: msg="Der Output ist:{{ python_out }}"
+
+    - name: Deploy mxd file
+      win_copy:
+        dest: C:\mxd-files\
+        src: files/mxd-files/test1.bin
+
+
